@@ -88,6 +88,7 @@ require('neodev').setup()
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 vim.opt.termguicolors = true
+
 require("nvim-tree").setup({
 	sort_by = "case_sensitive",
 	view = {
@@ -118,6 +119,16 @@ require("mason").setup({
 
 
 require 'lspconfig'.gopls.setup {}
+require 'lspconfig'.tsserver.setup {}
+require 'lspconfig'.eslint.setup {
+	root_dir = require 'lspconfig/util'.root_pattern('package.json', '.eslintrc', '.git'),
+	on_attach = function(client, bufnr)
+		vim.api.nvim_create_autocmd("BufWritePre", {
+			buffer = bufnr,
+			command = "EslintFixAll",
+		})
+	end,
+}
 vim.keymap.set('n', '<space>e', vim.diagnostic.open_float)
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev)
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next)
@@ -223,7 +234,9 @@ local servers = {
 	},
 	-- pyright = {},
 	-- rust_analyzer = {},
-	-- tsserver = {},
+	-- eslint = {},
+	jsonls = {},
+	cssls = {},
 	html = { filetypes = { 'html', 'twig', 'hbs' } },
 
 	lua_ls = {
@@ -254,7 +267,7 @@ mason_lspconfig.setup_handlers {
 }
 
 require 'nvim-treesitter.configs'.setup {
-	ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "go", "javascript" },
+	ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "go", "javascript", "tsx", "json", "html", "css" },
 	sync_install = false,
 	auto_install = true,
 	ignore_install = {},
