@@ -28,6 +28,7 @@ vim.opt.signcolumn = "yes:1"
 require("lazy").setup({
 	{ 'numToStr/Comment.nvim',          opts = {} },
 	{ 'folke/which-key.nvim',           opts = {} },
+	{ 'lewis6991/gitsigns.nvim',        opts = {} },
 	{ "EdenEast/nightfox.nvim" },
 	{ "nvim-treesitter/nvim-treesitter" },
 	'nvim-lualine/lualine.nvim',
@@ -134,14 +135,14 @@ vim.keymap.set('n', '[d', vim.diagnostic.goto_prev)
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next)
 vim.keymap.set('n', '<space>q', vim.diagnostic.setloclist)
 
-vim.keymap.set('n', '<C-o>', '<C-o>zz')                                  -- TODO: find a way to overwrite the original keymapping
-vim.keymap.set('n', '<A-o>', ':w<cr> :!goimports -w % <cr><cr> :bw<cr>') -- Save and close buffer
--- vim.keymap.set('n', '<A-o>', ':w<cr> :bw<cr>')         -- Save and close buffer
-vim.keymap.set('n', '<A-C-q>', ':source $MYVIMRC<cr>')                   -- Source config
-vim.keymap.set('n', '<A-.>', ':NvimTreeToggle<CR>')                      -- Source config
+vim.keymap.set('n', '<C-o>', '<C-o>zz')
+vim.keymap.set('n', '<A-o>', ':w<cr> :!goimports -w % <cr><cr> :bw<cr>')
+-- vim.keymap.set('n', '<A-o>', ':w<cr> :bw<cr>')
+vim.keymap.set('n', '<A-C-q>', ':source $MYVIMRC<cr>')
+vim.keymap.set('n', '<A-.>', ':NvimTreeToggle<CR>')
 
-vim.keymap.set('n', '<S-l>', '<C-w>l')                                   -- Source config
-vim.keymap.set('n', '<S-h>', '<C-w>h')                                   -- Source config
+vim.keymap.set('n', '<S-l>', '<C-w>l')
+vim.keymap.set('n', '<S-h>', '<C-w>h')
 vim.keymap.set('n', '<S-j>', '<C-w>j')
 vim.keymap.set('n', '<S-k>', '<C-w>k')
 
@@ -541,3 +542,47 @@ ins_right {
 
 -- Now don't forget to initialize lualine
 lualine.setup(config)
+
+
+
+require('gitsigns').setup {
+	signs                        = {
+		add          = { text = '│' },
+		change       = { text = '│' },
+		delete       = { text = '_' },
+		topdelete    = { text = '‾' },
+		changedelete = { text = '~' },
+		untracked    = { text = '┆' },
+	},
+	signcolumn                   = true, -- Toggle with `:Gitsigns toggle_signs`
+	numhl                        = false, -- Toggle with `:Gitsigns toggle_numhl`
+	linehl                       = false, -- Toggle with `:Gitsigns toggle_linehl`
+	word_diff                    = false, -- Toggle with `:Gitsigns toggle_word_diff`
+	watch_gitdir                 = {
+		follow_files = true
+	},
+	attach_to_untracked          = true,
+	current_line_blame           = false, -- Toggle with `:Gitsigns toggle_current_line_blame`
+	current_line_blame_opts      = {
+		virt_text = true,
+		virt_text_pos = 'eol', -- 'eol' | 'overlay' | 'right_align'
+		delay = 1000,
+		ignore_whitespace = false,
+	},
+	current_line_blame_formatter = '<author>, <author_time:%Y-%m-%d> - <summary>',
+	sign_priority                = 6,
+	update_debounce              = 100,
+	status_formatter             = nil,  -- Use default
+	max_file_length              = 40000, -- Disable if file is longer than this (in lines)
+	preview_config               = {
+		-- Options passed to nvim_open_win
+		border = 'single',
+		style = 'minimal',
+		relative = 'cursor',
+		row = 0,
+		col = 1
+	},
+	yadm                         = {
+		enable = false
+	},
+}
