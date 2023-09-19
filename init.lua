@@ -158,6 +158,8 @@ vim.keymap.set('n', '<A-o>', ':w<cr> :!goimports -w % <cr><cr> :bw<cr>')
 -- vim.keymap.set('n', '<A-o>', ':w<cr> :bw<cr>')
 vim.keymap.set('n', '<A-C-q>', ':source $MYVIMRC<cr>')
 vim.keymap.set('n', '<A-.>', ':NvimTreeToggle<CR>')
+vim.keymap.set('n', '<A-z>', '')
+vim.keymap.set('n', '<C-z>', '')
 
 vim.keymap.set('n', '<S-l>', '<C-w>l')
 vim.keymap.set('n', '<S-h>', '<C-w>h')
@@ -595,6 +597,16 @@ require('gitsigns').setup {
 local s = luasnip.snippet
 local t = luasnip.text_node
 local i = luasnip.insert_node
+luasnip.add_snippets("all", {
+	s("s", {
+		t({ "type " }), i(1), t({ " struct {", "\t", "}" }),
+	})
+})
+luasnip.add_snippets("all", {
+	s("e", {
+		t({ "if err != nil {", '\treturn err', "}" }),
+	})
+})
 
 luasnip.add_snippets("all", {
 	s("d", {
