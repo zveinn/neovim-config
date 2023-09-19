@@ -21,7 +21,8 @@ vim.opt.splitright = true
 vim.opt.tabstop = 2
 vim.opt.smartindent = true
 vim.opt.shiftwidth = 2
-vim.opt.wrap = false
+vim.opt.wrap = true
+vim.opt.linebreak = true
 vim.opt.softtabstop = 2
 vim.opt.signcolumn = "yes:1"
 
@@ -31,6 +32,15 @@ require("lazy").setup({
 	{ 'lewis6991/gitsigns.nvim',         opts = {}, pin = true },
 	{ "EdenEast/nightfox.nvim",          pin = true },
 	{ "nvim-treesitter/nvim-treesitter", pin = true },
+	{
+		'windwp/nvim-autopairs',
+		event = "InsertEnter",
+		opts = {} -- this is equalent to setup({}) function
+	},
+	{
+		"L3MON4D3/LuaSnip",
+		dependencies = { "rafamadriz/friendly-snippets" },
+	},
 
 	{
 		'nvim-lualine/lualine.nvim',
@@ -298,21 +308,6 @@ local cmp = require 'cmp'
 local luasnip = require 'luasnip'
 require('luasnip.loaders.from_vscode').lazy_load()
 luasnip.config.setup {}
-local s = luasnip.snippet
-local t = luasnip.text_node
-
-luasnip.add_snippets("all", {
-	s("d", {
-		t(
-			{ "defer func(){"
-			, "\tr := recover()"
-			, "\tif r != nil {"
-			, "\t\tlog.Println(r, string(debug.Stack()))"
-			, "\t}"
-			, "}()"
-			})
-	})
-})
 
 
 cmp.setup {
@@ -594,3 +589,22 @@ require('gitsigns').setup {
 		enable = false
 	},
 }
+
+
+
+local s = luasnip.snippet
+local t = luasnip.text_node
+local i = luasnip.insert_node
+
+luasnip.add_snippets("all", {
+	s("d", {
+		t(
+			{ "defer func(){"
+			, "\tr := recover()"
+			, "\tif r != nil {"
+			, "\t\tlog.Println(r, string(debug.Stack()))"
+			, "\t}"
+			, "}()"
+			})
+	})
+})
