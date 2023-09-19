@@ -26,15 +26,20 @@ vim.opt.softtabstop = 2
 vim.opt.signcolumn = "yes:1"
 
 require("lazy").setup({
-	{ 'numToStr/Comment.nvim',          opts = {} },
-	{ 'folke/which-key.nvim',           opts = {} },
-	{ 'lewis6991/gitsigns.nvim',        opts = {} },
-	{ "EdenEast/nightfox.nvim" },
-	{ "nvim-treesitter/nvim-treesitter" },
-	'nvim-lualine/lualine.nvim',
-	dependencies = { 'nvim-tree/nvim-web-devicons', opt = {} },
+	{ 'numToStr/Comment.nvim',           opts = {}, pin = true },
+	{ 'folke/which-key.nvim',            opts = {}, pin = true },
+	{ 'lewis6991/gitsigns.nvim',         opts = {}, pin = true },
+	{ "EdenEast/nightfox.nvim",          pin = true },
+	{ "nvim-treesitter/nvim-treesitter", pin = true },
+
+	{
+		'nvim-lualine/lualine.nvim',
+		pin = true,
+		dependencies = { 'nvim-tree/nvim-web-devicons', opt = {} }
+	},
 	{
 		'nvim-telescope/telescope.nvim',
+		pin = true,
 		branch = '0.1.x',
 		dependencies = {
 			'nvim-lua/plenary.nvim',
@@ -49,6 +54,7 @@ require("lazy").setup({
 	},
 	{
 		'neovim/nvim-lspconfig',
+		pin = true,
 		dependencies = {
 			{ 'williamboman/mason.nvim', config = true },
 			'williamboman/mason-lspconfig.nvim',
@@ -58,6 +64,7 @@ require("lazy").setup({
 	},
 	{
 		'hrsh7th/nvim-cmp',
+		pin = true,
 		dependencies = {
 			'L3MON4D3/LuaSnip',
 			'saadparwaiz1/cmp_luasnip',
@@ -66,6 +73,7 @@ require("lazy").setup({
 	},
 	{
 		"nvim-tree/nvim-tree.lua",
+		pin = true,
 		version = "*",
 		lazy = false,
 		dependencies = {
