@@ -148,13 +148,15 @@ require 'lspconfig'.eslint.setup {
 		})
 	end,
 }
-vim.keymap.set('n', '<space>e', vim.diagnostic.open_float)
-vim.keymap.set('n', '[d', vim.diagnostic.goto_prev)
-vim.keymap.set('n', ']d', vim.diagnostic.goto_next)
-vim.keymap.set('n', '<space>q', vim.diagnostic.setloclist)
+vim.keymap.set('n', '<C-a>', vim.diagnostic.open_float)
+-- vim.keymap.set('n', '<C-s>', vim.diagnostic.goto_prev)
+-- vim.keymap.set('n', '<C-d>', vim.diagnostic.goto_next)
+vim.keymap.set('n', '<C-s>', ':lua vim.diagnostic.goto_prev()<cr> zz')
+vim.keymap.set('n', '<C-d>', ':lua vim.diagnostic.goto_next()<cr> zz')
+--vim.keymap.set('n', 'C-q', vim.diagnostic.setloclist)
 
 vim.keymap.set('n', '<C-o>', '<C-o>zz')
-vim.keymap.set('n', '<A-o>', ':w<cr> :!goimports -w % <cr><cr> :bw<cr>')
+vim.keymap.set('n', '<A-o>', ':w<cr> :!goimports -w % <cr><cr> :q<cr>')
 -- vim.keymap.set('n', '<A-o>', ':w<cr> :bw<cr>')
 vim.keymap.set('n', '<A-C-q>', ':source $MYVIMRC<cr>')
 vim.keymap.set('n', '<A-.>', ':NvimTreeToggle<CR>')
@@ -216,14 +218,14 @@ local on_attach = function(_, bufnr)
 	--	requires vim.opt.splitright = true
 	nmap('<A-p>', ':vsp<cr> :lua vim.lsp.buf.definition()<CR>', '[G]oto [D]efinition')
 	nmap('<A-S-i>', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
-	nmap('<leader>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
+	--nmap('<leader>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
 
 	-- nmap('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
 	-- nmap('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
 	-- nmap('<leader>D', vim.lsp.buf.type_definition, 'Type [D]efinition')
 
 	-- See `:help K` for why this keymap
-	nmap('Q', vim.lsp.buf.hover, 'Hover Documentation')
+	nmap('D', vim.lsp.buf.hover, 'Hover Documentation')
 	-- nmap('<C-k>', vim.lsp.buf.signature_help, 'Signature Documentation')
 
 	-- Lesser used LSP functionality
@@ -319,11 +321,11 @@ cmp.setup {
 		end,
 	},
 	mapping = cmp.mapping.preset.insert {
-		['<C-n>'] = cmp.mapping.select_next_item(),
-		['<C-p>'] = cmp.mapping.select_prev_item(),
-		['<C-d>'] = cmp.mapping.scroll_docs(-4),
+		--	['<C-n>'] = cmp.mapping.select_next_item(),
+		--	['<C-p>'] = cmp.mapping.select_prev_item(),
+		--['<C-d>'] = cmp.mapping.scroll_docs(-4),
 		-- ['<C-f>'] = cmp.mapping.scroll_docs(4),
-		['<C-Space>'] = cmp.mapping.complete {},
+		-- ['<C-Space>'] = cmp.mapping.complete {},
 		['<CR>'] = cmp.mapping.confirm {
 			behavior = cmp.ConfirmBehavior.Replace,
 			select = true,
