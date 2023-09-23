@@ -140,7 +140,19 @@ require("mason").setup({
 require 'lspconfig'.gopls.setup {}
 require 'lspconfig'.tsserver.setup {}
 require 'lspconfig'.eslint.setup {
-	root_dir = require 'lspconfig/util'.root_pattern('package.json', '.eslintrc', '.git'),
+	-- root_dir = require 'lspconfig/util'.root_pattern('package.json', '.eslintrc', '.git'),
+	root_dir = require 'lspconfig/util'.root_pattern(
+		'.eslintrc',
+		'.eslintrc.js',
+		'.eslintrc.cjs',
+		'.eslintrc.yaml',
+		'.eslintrc.yml',
+		'.eslintrc.json',
+		'package.json',
+		'.git'
+	),
+
+
 	on_attach = function(client, bufnr)
 		vim.api.nvim_create_autocmd("BufWritePre", {
 			buffer = bufnr,
@@ -148,6 +160,7 @@ require 'lspconfig'.eslint.setup {
 		})
 	end,
 }
+
 vim.keymap.set('n', '<C-a>', vim.diagnostic.open_float)
 -- vim.keymap.set('n', '<C-s>', vim.diagnostic.goto_prev)
 -- vim.keymap.set('n', '<C-d>', vim.diagnostic.goto_next)
@@ -196,10 +209,8 @@ vim.keymap.set('n', '<A-S-y>', require('telescope.builtin').grep_string, { desc 
 -- vim.keymap.set('n', '<A-S-y>', require('telescope.builtin').live_grep, { desc = '[S]earch by [G]rep' })
 vim.keymap.set('n', '<A-S-p>', require('telescope.builtin').diagnostics, { desc = '[S]earch [D]iagnostics' })
 --vim.keymap.set('n', '<leader>sr', require('telescope.builtin').resume, { desc = '[S]earch [R]resume' })
---
--- FULL GREP, files, file grep, diagnostics
---
--- SEARCH FILE, Global symbol, file grep, diagnostics
+vim.keymap.set('n', '<A-S-i>', require('telescope.builtin').lsp_dynamic_workspace_symbols,
+	{ desc = '[W]orkspace [S]ymbols' })
 
 local on_attach = function(_, bufnr)
 	local nmap = function(keys, func, desc)
@@ -217,7 +228,6 @@ local on_attach = function(_, bufnr)
 
 	--	requires vim.opt.splitright = true
 	nmap('<A-p>', ':vsp<cr> :lua vim.lsp.buf.definition()<CR>', '[G]oto [D]efinition')
-	nmap('<A-S-i>', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
 	--nmap('<leader>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
 
 	-- nmap('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
@@ -257,7 +267,7 @@ local servers = {
 	},
 	-- pyright = {},
 	-- rust_analyzer = {},
-	-- eslint = {},
+	eslint = {},
 	jsonls = {},
 	cssls = {},
 	html = { filetypes = { 'html', 'twig', 'hbs' } },
@@ -290,13 +300,14 @@ mason_lspconfig.setup_handlers {
 }
 
 require 'nvim-treesitter.configs'.setup {
-	ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "go", "javascript", "tsx", "json", "html", "css" },
+	ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "go", "javascript", "tsx", "typescript",
+		"json", "html",
+		"css" },
 	sync_install = false,
 	auto_install = true,
 	ignore_install = {},
 	highlight = {
 		enable = true,
-		disable = {},
 		disable = function(lang, buf)
 			local max_filesize = 1000 * 1024 -- 1000 KB
 			local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
