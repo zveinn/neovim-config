@@ -17,7 +17,9 @@ vim.g.mapleader = " "
 vim.g.maplocalleader = ' '
 vim.wo.number = false
 vim.opt.splitright = true
+vim.opt.ttimeoutlen = 50
 
+-- vim.opt.shellcmdflag = "-ic"
 vim.opt.tabstop = 2
 vim.opt.smartindent = true
 vim.opt.shiftwidth = 2
@@ -25,6 +27,7 @@ vim.opt.wrap = true
 vim.opt.linebreak = true
 vim.opt.softtabstop = 2
 vim.opt.signcolumn = "yes:1"
+vim.opt.hlsearch = false
 
 require("lazy").setup({
 	{ 'numToStr/Comment.nvim',           opts = {}, pin = true },
@@ -161,11 +164,9 @@ require 'lspconfig'.eslint.setup {
 	end,
 }
 
-vim.keymap.set('n', '<C-a>', vim.diagnostic.open_float)
 -- vim.keymap.set('n', '<C-s>', vim.diagnostic.goto_prev)
 -- vim.keymap.set('n', '<C-d>', vim.diagnostic.goto_next)
-vim.keymap.set('n', '<C-s>', ':lua vim.diagnostic.goto_prev()<cr> zz')
-vim.keymap.set('n', '<C-d>', ':lua vim.diagnostic.goto_next()<cr> zz')
+-- vim.keymap.set('n', '<C-s>', ':lua vim.diagnostic.goto_prev()<cr> zz')
 --vim.keymap.set('n', 'C-q', vim.diagnostic.setloclist)
 
 vim.keymap.set('n', '<C-o>', '<C-o>zz')
@@ -194,23 +195,49 @@ pcall(require('telescope').load_extension, 'fzf')
 -- See `:help telescope.builtin`
 -- vim.keymap.set('n', '<leader>?', require('telescope.builtin').oldfiles, { desc = '[?] Find recently opened files' })
 -- vim.keymap.set('n', '<leader><space>', require('telescope.builtin').buffers, { desc = '[ ] Find existing buffers' })
-vim.keymap.set('n', '<A-S-o>', function()
-	-- You can pass additional configuration to telescope to change theme, layout, etc.
-	require('telescope.builtin').current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
-		winblend = 20,
-		previewer = true,
-	})
-end, { desc = '[/] Fuzzily search in current buffer' })
+
+vim.keymap.set('n', '<C-a>', require('telescope.builtin').diagnostics, { desc = '[S]earch [D]iagnostics' })
+vim.keymap.set('n', '<C-d>', ':lua vim.diagnostic.goto_next()<cr> zz')
+vim.keymap.set('n', '<C-s>', vim.diagnostic.open_float)
 
 --vim.keymap.set('n', '<leader>gf', require('telescope.builtin').git_files, { desc = 'Search [G]it [F]iles' })
-vim.keymap.set('n', '<A-S-u>', require('telescope.builtin').find_files, { desc = '[S]earch [F]iles' })
 -- vim.keymap.set('n', '<leader>sh', require('telescope.builtin').help_tags, { desc = '[S]earch [H]elp' })
-vim.keymap.set('n', '<A-S-y>', require('telescope.builtin').grep_string, { desc = '[S]earch current [W]ord' })
--- vim.keymap.set('n', '<A-S-y>', require('telescope.builtin').live_grep, { desc = '[S]earch by [G]rep' })
-vim.keymap.set('n', '<A-S-p>', require('telescope.builtin').diagnostics, { desc = '[S]earch [D]iagnostics' })
---vim.keymap.set('n', '<leader>sr', require('telescope.builtin').resume, { desc = '[S]earch [R]resume' })
+-- vim.keymap.set('n', '<A-S-y>', require('telescope.builtin').grep_string, { desc = '[S]earch current [W]ord' })
+vim.keymap.set('n', '<A-S-u>', require('telescope.builtin').live_grep, { desc = '[S]earch by [G]rep' })
 vim.keymap.set('n', '<A-S-i>', require('telescope.builtin').lsp_dynamic_workspace_symbols,
 	{ desc = '[W]orkspace [S]ymbols' })
+vim.keymap.set('n', '<A-S-o>', require('telescope.builtin').find_files, { desc = '[S]earch [F]iles' })
+--vim.keymap.set('n', '<leader>sr', require('telescope.builtin').resume, { desc = '[S]earch [R]resume' })
+
+vim.keymap.set('n', '<A-S-p>', function()
+	-- You can pass additional configuration to telescope to change theme, layout, etc.
+	require('telescope.builtin').current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
+		winblend = 0,
+		previewer = true,
+		theme = "dropdown",
+
+		sorting_strategy = "ascending",
+		layout_strategy = "center",
+		layout_config = {
+			preview_cutoff = 0, -- Preview should always show (unless previewer = false)
+
+			width = function(_, max_columns, _)
+				return math.min(max_columns, 100)
+			end,
+
+			height = function(_, _, max_lines)
+				return math.min(max_lines, 15)
+			end,
+		},
+
+		border = true,
+		borderchars = {
+			prompt = { "─", "│", " ", "│", "", "", "│", "│" },
+			results = { "─", "│", "─", "│", "", "", "", "" },
+			preview = { "─", "│", "─", "│", "", "", "", "" },
+		},
+	})
+end, { desc = '[/] Fuzzily search in current buffer' })
 
 local on_attach = function(_, bufnr)
 	local nmap = function(keys, func, desc)
@@ -221,22 +248,22 @@ local on_attach = function(_, bufnr)
 		vim.keymap.set('n', keys, func, { buffer = bufnr, desc = desc })
 	end
 
-	nmap('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
-	nmap('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
+	-- nmap('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
 
-	nmap('<C-p>', vim.lsp.buf.definition, '[G]oto [D]efinition')
+	nmap('<C-r>', vim.lsp.buf.rename, '[R]e[n]ame')
 
 	--	requires vim.opt.splitright = true
-	nmap('<A-p>', ':vsp<cr> :lua vim.lsp.buf.definition()<CR>', '[G]oto [D]efinition')
+	nmap('<C-p>', vim.lsp.buf.definition, '[G]oto [D]efinition')
+	nmap('<A-p>', ':vsp<cr> :lua vim.lsp.buf.definition()<CR><CR>zz', '[G]oto [D]efinition')
 	--nmap('<leader>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
 
 	-- nmap('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
 	-- nmap('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
-	-- nmap('<leader>D', vim.lsp.buf.type_definition, 'Type [D]efinition')
 
 	-- See `:help K` for why this keymap
-	nmap('D', vim.lsp.buf.hover, 'Hover Documentation')
-	-- nmap('<C-k>', vim.lsp.buf.signature_help, 'Signature Documentation')
+	-- nmap('<A-e>', vim.lsp.buf.type_definition, 'Type [D]efinition') -- SAME AS ALT+P
+	nmap('<A-w>', vim.lsp.buf.hover, 'Hover Documentation')
+	nmap('<A-q>', vim.lsp.buf.signature_help, 'Signature Documentation')
 
 	-- Lesser used LSP functionality
 	--	nmap('<leader>wa', vim.lsp.buf.add_workspace_folder, '[W]orkspace [A]dd Folder')
@@ -523,7 +550,7 @@ ins_left {
 	},
 }
 
-ins_right {
+ins_left {
 	-- Lsp server name .
 	function()
 		local msg = 'No Active Lsp'
@@ -543,14 +570,14 @@ ins_right {
 	color = { fg = '#ffffff', gui = 'bold' },
 }
 
-ins_right {
+ins_left {
 	'o:encoding',      -- option component same as &encoding in viml
 	fmt = string.upper, -- I'm not sure why it's upper case either ;)
 	cond = conditions.hide_in_width,
 	color = { fg = colors.green, gui = 'bold' },
 }
 
-ins_right {
+ins_left {
 	'fileformat',
 	fmt = string.upper,
 	icons_enabled = false, -- I think icons are cool but Eviline doesn't have them. sigh
