@@ -18,6 +18,7 @@ vim.g.maplocalleader = ' '
 vim.wo.number = false
 vim.opt.splitright = true
 vim.opt.ttimeoutlen = 50
+vim.opt.clipboard = "unnamedplus"
 
 -- vim.opt.shellcmdflag = "-ic"
 vim.opt.tabstop = 2
