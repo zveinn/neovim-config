@@ -93,7 +93,7 @@ require("lazy").setup({
 		dependencies = {
 			"nvim-tree/nvim-web-devicons",
 		},
-	}
+	},
 })
 
 local nightfox = require("nightfox")
@@ -106,8 +106,8 @@ nightfox.load()
 
 vim.cmd("colorscheme nightfox")
 
-require('neodev').setup()
 
+require('neodev').setup()
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 vim.opt.termguicolors = true
@@ -141,29 +141,6 @@ require("mason").setup({
 })
 
 
-require 'lspconfig'.gopls.setup {}
-require 'lspconfig'.tsserver.setup {}
-require 'lspconfig'.eslint.setup {
-	-- root_dir = require 'lspconfig/util'.root_pattern('package.json', '.eslintrc', '.git'),
-	root_dir = require 'lspconfig/util'.root_pattern(
-		'.eslintrc',
-		'.eslintrc.js',
-		'.eslintrc.cjs',
-		'.eslintrc.yaml',
-		'.eslintrc.yml',
-		'.eslintrc.json',
-		'package.json',
-		'.git'
-	),
-
-
-	on_attach = function(client, bufnr)
-		vim.api.nvim_create_autocmd("BufWritePre", {
-			buffer = bufnr,
-			command = "EslintFixAll",
-		})
-	end,
-}
 
 -- vim.keymap.set('n', '<C-s>', vim.diagnostic.goto_prev)
 -- vim.keymap.set('n', '<C-d>', vim.diagnostic.goto_next)
@@ -240,6 +217,7 @@ vim.keymap.set('n', '<A-S-p>', function()
 	})
 end, { desc = '[/] Fuzzily search in current buffer' })
 
+
 local on_attach = function(_, bufnr)
 	local nmap = function(keys, func, desc)
 		if desc then
@@ -288,18 +266,27 @@ local on_attach = function(_, bufnr)
 	end, { desc = 'Format current buffer with LSP' })
 end
 
+
 local servers = {
-	-- clangd = {},
 	gopls = {
 		gofumpt = true
 	},
-	-- pyright = {},
-	-- rust_analyzer = {},
+	efm = {},
+	tsserver = {},
 	eslint = {},
 	jsonls = {},
-	cssls = {},
+	cssls = {
+		css = {
+			validate = true
+		},
+		less = {
+			validate = true
+		},
+		scss = {
+			validate = true
+		}
+	},
 	html = { filetypes = { 'html', 'twig', 'hbs' } },
-
 	lua_ls = {
 		Lua = {
 			workspace = { checkThirdParty = false },
@@ -327,9 +314,43 @@ mason_lspconfig.setup_handlers {
 	end
 }
 
+require "lspconfig".efm.setup {
+	init_options = { documentFormatting = true },
+	settings = {
+		languages = {
+			css = {
+				{ formatCommand = 'prettier "${INPUT}"', formatStdin = true, }
+			},
+			scss = {
+				{ formatCommand = 'prettier "${INPUT}"', formatStdin = true, }
+			}
+		}
+	}
+}
+
+require('lspconfig').eslint.setup {
+	-- root_dir = require 'lspconfig/util'.root_pattern('package.json', '.eslintrc', '.git'),
+	root_dir = require 'lspconfig/util'.root_pattern(
+		'.eslintrc',
+		'.eslintrc.js',
+		'.eslintrc.cjs',
+		'.eslintrc.yaml',
+		'.eslintrc.yml',
+		'.eslintrc.json',
+		'package.json',
+		'.git'
+	),
+
+	on_attach = function(client, bufnr)
+		vim.api.nvim_create_autocmd("BufWritePre", {
+			buffer = bufnr,
+			command = "EslintFixAll",
+		})
+	end,
+}
+
 require 'nvim-treesitter.configs'.setup {
-	ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "go", "javascript", "tsx", "typescript",
-		"json", "html",
+	ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "go", "javascript", "tsx", "typescript", "json", "html",
 		"css" },
 	sync_install = false,
 	auto_install = true,
